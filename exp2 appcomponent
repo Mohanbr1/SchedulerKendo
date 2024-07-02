@@ -1,0 +1,81 @@
+import { Component } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  CreateFormGroupArgs,
+  SchedulerEvent
+} from "@progress/kendo-angular-scheduler";
+import { sampleDataWithResources, displayDate } from "./events-utc";
+
+@Component({
+  selector: "my-app",
+  templateUrl: "app.component.html"
+})
+export class AppComponent {
+  constructor(private formBuilder: FormBuilder) {
+    this.createFormGroup = this.createFormGroup.bind(this);
+  }
+  public selectedDate: Date = displayDate;
+  public events: SchedulerEvent[] = sampleDataWithResources;
+  public formGroup: FormGroup;
+  public listItems: Array<number> = [1, 2];
+
+  public resources: any[] = [
+    {
+      name: "Rooms",
+      data: [
+        { text: "R-101", value: 1, color: "#6eb3fa" },
+        { text: "R-201", value: 2, color: "#ce4168" }
+      ],
+      field: "roomId",
+      valueField: "value",
+      textField: "text",
+      //colorField: "color"
+    },
+    {
+      name: "Attendees",
+      data: [
+        { text: "Alex", value: 1, color: "#69116d" },
+        { text: "Bob", value: 2, color: "#205a92" },
+        { text: "Charlie", value: 3, color: "#1e7440" }
+      ],
+      multiple: true,
+      field: "attendees",
+      valueField: "value",
+      textField: "text",
+      //colorField: "color"
+    }
+  ];
+
+  public createFormGroup(args: CreateFormGroupArgs): FormGroup {
+    const dataItem = args.dataItem;
+
+    this.formGroup = this.formBuilder.group({
+      id: args.isNew ? this.getNextId() : dataItem.id,
+      start: [dataItem.start, Validators.required],
+      end: [dataItem.end, Validators.required],
+      startTimezone: [dataItem.startTimezone],
+      endTimezone: [dataItem.endTimezone],
+      isAllDay: dataItem.isAllDay,
+      title: dataItem.title,
+      description: dataItem.description,
+      recurrenceRule: dataItem.recurrenceRule,
+      recurrenceId: dataItem.recurrenceId,
+      dataItem: {
+        color: "#0000aa"
+      },
+      roomColor: dataItem.roomColor,
+      roomId: dataItem.roomId
+    });
+    return this.formGroup;
+  }
+
+  public getNextId(): number {
+    const len = this.events.length;
+
+    return len === 0 ? 1 : this.events[this.events.length - 1].id + 1;
+  }
+
+  public log(e) {
+    console.log(e);
+  }
+}
