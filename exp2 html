@@ -1,0 +1,58 @@
+<kendo-scheduler
+  [kendoSchedulerReactiveEditing]="createFormGroup"
+  [kendoSchedulerBinding]="events"
+  [selectedDate]="selectedDate"
+  [resources]="resources"
+  startTime="10:00"
+  endTime="19:00"
+>
+  <ng-template
+    kendoSchedulerEventTemplate
+    let-event="event"
+    let-resources="resources"
+  >
+    {{ event.title }}
+    <div>
+      <ng-container *ngFor="let resource of resources">
+        <!-- attendees are always an array with lengtth of 2, so that's how we distinguish between Attendee info and Room info -->
+        <span *ngIf="!resource.length; else multipleResource">
+          <span
+            [style.background]="'grey'"
+            style="padding: 4px; margin: 4px;"
+          >
+            {{ 'Room: ' + resource.text }}
+          </span>
+        </span>
+        <ng-template #multipleResource>
+          <span
+            *ngFor="let item of resource"
+            [style.background]="item.color"
+            style="padding: 4px; margin: 4px;"
+          >
+            {{ "Mr " + item.text }}
+          </span>
+        </ng-template>
+      </ng-container>
+    </div>
+  </ng-template>
+
+  <ng-template
+    kendoSchedulerEditDialogTemplate
+    let-formGroup="formGroup"
+    let-isNew="isNew"
+    let-editMode="editMode"
+  >
+    Event title:
+    <input [formControl]="formGroup.get('title')"/>
+    <br />
+    Event color:
+    <kendo-dropdownlist
+      [formControl]="formGroup.get('roomId')"
+      [data]="listItems"
+    ></kendo-dropdownlist>
+  </ng-template>
+
+  <kendo-scheduler-day-view> </kendo-scheduler-day-view>
+
+  <kendo-scheduler-week-view> </kendo-scheduler-week-view>
+</kendo-scheduler>
